@@ -9,7 +9,7 @@ class CrudFileRepository(ABC):
         raise NotImplementedError('provide implementation for filepath()')
 
     def save(self):
-        with open(self.filepath(), 'w+') as file:
+        with open(self.filepath(), 'r+') as file:
             lines = file.readlines()
             if self.id is None:
                 self.id = 1 if len(lines) is 0 else (int(lines[len(lines) - 1].split(',')[0])) + 1

@@ -1,6 +1,7 @@
 from book import Book
 from member import Member
 from exception import ValueNotFound
+from member_books import MemberBooks
 
 def save_book():
     name = input('Enter book name>>>')
@@ -43,10 +44,16 @@ def update_member():
     member.save()
 
 def issue_book():
-    pass
+    book_id = input('Enter book id to be issued>>>')
+    member_id = input('Enter your member id>>>')
+    member_book = MemberBooks(member_id, book_id)
+    member_book.save()
 
 def return_book():
-    pass
+    book_id = input('Enter book id to be returned>>>')
+    member_id = input('Enter your member id>>>')
+    member_book = MemberBooks(member_id, book_id)
+    member_book.delete()
 
 lib_ops = {
         '1': save_book, 

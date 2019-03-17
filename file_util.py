@@ -9,7 +9,7 @@ class FileUtil:
             try:
                 file.seek(-2, os.SEEK_END)
                 while file.read(1) != b"\n":
-                return file.readline()
+                    return file.readline()
             except OSError:
                 print("file is empty")
                 return None
