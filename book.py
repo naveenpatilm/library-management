@@ -1,8 +1,11 @@
 from crud_file_repository import CrudFileRepository
 
 class Book(CrudFileRepository):
-    def __init__(self, name, author, id = None):
+
+    def __init__(self, name = None, author = None, id = None):
         self.id = id
         self.name = name
         self.author = author
-        super(Book, self).__init__("books.txt")
+
+    def filepath(self):
+        return "books.txt"

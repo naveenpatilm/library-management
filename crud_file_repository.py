@@ -1,51 +1,53 @@
 from file_util import FileUtil
 from exception import ValueNotFound
+from abc import ABC, abstractmethod
 
-class CrudFileRepository(object):
-    def __init__(self, filePath):
-        self.filePath = filePath
+class CrudFileRepository(ABC):
+
+    @abstractmethod
+    def filepath(self):
+        raise NotImplementedError('provide implementation for filepath()')
 
     def save(self):
-        with open(self.filePath, 'a+') as file:
+        with open(self.filepath(), 'w+') as file:
+            lines = file.readlines()
             if self.id is None:
-                lastLine = FileUtil.readLastLine(self.filePath)
-                self.id = 1 if lastLine is None else (int(lastLine.decode("utf-8").split(',')[0])) + 1
-                bookDetails = []
-                for index, attr in enumerate(self.__dict__.values()):
-                    if index != len(self.__dict__.values()) - 1:
-                        bookDetails.append(attr)
-                file.write((','.join(map(str, bookDetails)) + '\n'))
+                self.id = 1 if len(lines) is 0 else (int(lines[len(lines) - 1].split(',')[0])) + 1
+                file.write((','.join(map(str, self.__dict__.values())) + '\n'))
             else:
-                lines = file.readlines()
+                file.truncate(0)
+                file.seek(0)
                 for line in lines:
                     if line.startswith(str(self.id) + ','):
-                        line = ',".join(map(str, self.__dict__.values()).append("\n"))'
-                        file.writelines(lines)
-                        return
+                        file.write((','.join(map(str, self.__dict__.values())) + '\n'))
+                    else:
+                        file.write(line)
                 raise ValueNotFound("record not found for id - " + str(self.id))
 
-    def findAll(self):
+    def find_all(self):
         fileContent = []
-        with open(self.filePath, "r") as file:
+        with open(self.filepath(), "r") as file:
             lines = file.read().splitlines()
             for line in lines:
                 fileContent.append(line.split(','))
         return fileContent    
 
 
-    def deleteById(self, id):
-        with open(self.filePath, "rw") as file:
+    def delete_by_id(self, id):
+        with open(self.filepath(), "r+") as file:
             lines = file.readlines()
+            file.truncate(0)
+            file.seek(0)
             for lineNumber, line in enumerate(lines[:]):
-                if line.startswith(str(id) + ','):
-                    del lines[lineNumber]
-                    return
-            raise ValueNotFound("record not found for id - " + str(self.id))
+                if not line.startswith(str(id) + ','):
+                    file.write(line)
+            raise ValueNotFound("record not found for id - " + str(id))
 
-    def findById(self, id):
-        with open(self.filePath, "r") as file:
+    def find_by_id(self, id):
+        with open(self.filepath(), "r") as file:
             lines = file.readlines()
             for line in lines:
+                print(line)
                 if line.startswith(str(id) + ','):
-                    return line.split(',')
-            raise ValueNotFound("record not found for id - " + str(self.id))
+                    return line
+            raise ValueNotFound("record not found for id - " + str(id))

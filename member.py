@@ -1,7 +1,10 @@
 from crud_file_repository import CrudFileRepository
 
 class Member(CrudFileRepository):
-    def __init__(self, name, id = None):
+
+    def __init__(self, name = None, id = None):
         self.id = id
         self.name = name
-        super(Member, self).__init__("../member.txt")
+    
+    def filepath(self):
+        return "members.txt"
